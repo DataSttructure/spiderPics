@@ -17,10 +17,14 @@ func main() {
 	fmt.Println("Please input a keyword to download")
 	fmt.Scanln(&keyWord)
 	var searchURL string
-	for i := 1; i < 10; i++ {
+	for i := 1; ; i++ {
 		searchURL = "https://www.bizhizu.cn/search/" + keyWord + "/" + strconv.Itoa(int(i)) + ".html"
 		// fmt.Println(searchURL)
 		mainUrl := searchImageURL(searchURL, keyWord)
+		if len(mainUrl) == 0 {
+			fmt.Println("Download", i-1, "pages")
+			break
+		}
 		for i := range mainUrl {
 			saveToFolder(mainUrl[i], "/home/liting/go/src/pics/")
 		}
@@ -35,22 +39,21 @@ func searchImageURL(url, keyWord string) (urlSlice []string) {
 	doc.Find("a").Each(func(i int, selection *goquery.Selection) {
 		href, _ := selection.Attr("href")
 		href = strings.TrimSpace(href)
-		if len(href) > 2 {
-			if strings.HasPrefix(href, "https://www.bizhizu.cn/pic") || strings.HasPrefix(href, "https://www.bizhizu.cn/bizhi") {
-				if IsUrl(href) {
-					dup := false
-					for idx := range urlSlice {
-						if href == urlSlice[idx] {
-							dup = true
-						}
+		if strings.HasPrefix(href, "https://www.bizhizu.cn/pic") || strings.HasPrefix(href, "https://www.bizhizu.cn/bizhi") {
+			if IsUrl(href) {
+				dup := false
+				for idx := range urlSlice {
+					if href == urlSlice[idx] {
+						dup = true
 					}
-					if !dup {
-						urlSlice = append(urlSlice, href)
-						// fmt.Println("修改之后的url：", href)
-					}
+				}
+				if !dup {
+					urlSlice = append(urlSlice, href)
+					// fmt.Println("修改之后的url：", href)
 				}
 			}
 		}
+
 	})
 	return urlSlice
 }
