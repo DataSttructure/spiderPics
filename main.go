@@ -28,8 +28,6 @@ func main() {
 }
 
 func searchImageURL(url, keyWord string) (urlSlice []string) {
-
-	// searchURL := url + "/search/" + keyWord
 	doc, err := goquery.NewDocument(url)
 	if err != nil {
 		log.Fatal(err)
